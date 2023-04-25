@@ -8,15 +8,21 @@ const START_NODE_ROW = 10;
 const START_NODE_COL = 15;
 const FINISH_NODE_ROW = 10;
 const FINISH_NODE_COL = 35;
-const MAX_ROWS = 20;
-const MAX_COLS = 50;
+const MAX_ROWS = 22;
+const MAX_COLS = 48;
+const ORIGINAL_MESSAGE = 'Press Visualize to Start!';
+const FINAL_MESSAGE = 'Thank you!';
+let message;
 
 export default class PathfindingVisualizer extends Component {
   constructor() {
     super();
+    message = ORIGINAL_MESSAGE;
     this.state = {
       grid: [],
       mouseIsPressed: false,
+      mouseIsPressedForStartNode: false,
+      mouseIsPressedForEndNode: false,
     };
   }
 
@@ -25,18 +31,72 @@ export default class PathfindingVisualizer extends Component {
     this.setState({grid});
   }
 
+  removePreviousStartNode(grid){
+    for (let row = 0; row < MAX_ROWS; row++) {
+      for (let col = 0; col < MAX_COLS; col++) {
+        if (grid[row][col].isStart){
+          grid[row][col].isStart = false;
+        }
+      }
+    }
+    return grid;
+  }
+
+  removePreviousEndNode(grid){
+    for (let row = 0; row < MAX_ROWS; row++) {
+      for (let col = 0; col < MAX_COLS; col++) {
+        if (grid[row][col].isFinish){
+          grid[row][col].isFinish = false;
+        }
+      }
+    }
+    return grid;
+  }
+
   handleMouseDown(row, col) {
+    if(this.state.mouseIsPressedForStartNode){
+      const newGrid = this.state.grid.slice();
+      this.removePreviousStartNode(newGrid);
+      const node = newGrid[row][col];
+      const newNode = {
+        ...node,
+        isStart: !node.isStart,
+      };
+      newGrid[row][col] = newNode;
+      message = ORIGINAL_MESSAGE;
+      this.setState({grid: newGrid, mouseIsPressedForStartNode: false});
+      return;
+    }
+    if(this.state.mouseIsPressedForEndNode){
+      const newGrid = this.state.grid.slice();
+      this.removePreviousEndNode(newGrid);
+      const node = newGrid[row][col];
+      const newNode = {
+        ...node,
+        isFinish: !node.isFinish,
+      };
+      newGrid[row][col] = newNode;
+      message = ORIGINAL_MESSAGE;
+      this.setState({grid: newGrid, mouseIsPressedForEndNode: false});
+      return;
+    }
     const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
     this.setState({grid: newGrid, mouseIsPressed: true});
   }
 
   handleMouseEnter(row, col) {
+    if(this.state.mouseIsPressedForStartNode || this.state.mouseIsPressedForEndNode){
+      return;
+    }
     if (!this.state.mouseIsPressed) return;
     const newGrid = getNewGridWithWallToggled(this.state.grid, row, col);
     this.setState({grid: newGrid});
   }
 
   handleMouseUp() {
+    if(this.state.mouseIsPressedForStartNode || this.state.mouseIsPressedForEndNode){
+      return;
+    }
     this.setState({mouseIsPressed: false});
   }
 
@@ -66,13 +126,57 @@ export default class PathfindingVisualizer extends Component {
     }
   }
 
+  getStartNode(grid){
+    for (let row = 0; row < MAX_ROWS; row++) {
+      for (let col = 0; col < MAX_COLS; col++) {
+        if (grid[row][col].isStart){
+          return grid[row][col];
+        }
+      }
+    }
+    return grid[0][0];
+  }
+  getEndNode(grid){
+    for (let row = 0; row < MAX_ROWS; row++) {
+      for (let col = 0; col < MAX_COLS; col++) {
+        if (grid[row][col].isFinish){
+          return grid[row][col];
+        }
+      }
+    }
+    return grid[MAX_ROWS][MAX_COLS];
+  }
+  
+
   visualizeDijkstra() {
+    console.log('visualising Dijkstra');
     const {grid} = this.state;
-    const startNode = grid[START_NODE_ROW][START_NODE_COL];
-    const finishNode = grid[FINISH_NODE_ROW][FINISH_NODE_COL];
+    const startNode = this.getStartNode(grid);
+    const finishNode = this.getEndNode(grid);
     const visitedNodesInOrder = dijkstra(grid, startNode, finishNode);
+    message = FINAL_MESSAGE;
     const nodesInShortestPathOrder = getNodesInShortestPathOrder(finishNode);
-    this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+    this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder)
+  }
+
+  enterStartNode(){
+    message = 'Pick a Node as your Starting Node'
+    this.setState({mouseIsPressedForStartNode: true});
+  }
+  enterEndNode(){
+    message = 'Pick a Node as your Ending Node'
+    this.setState({mouseIsPressedForEndNode: true});
+  }
+  resetWalls(){
+    const newGrid = this.state.grid;
+    for (let row = 0; row < MAX_ROWS; row++) {
+      for (let col = 0; col < MAX_COLS; col++) {
+        if (newGrid[row][col].isWall){
+          newGrid[row][col].isWall = false;
+        }
+      }
+    }
+    this.setState({grid: newGrid});
   }
 
   render() {
@@ -80,18 +184,18 @@ export default class PathfindingVisualizer extends Component {
 
     return (
       <>
-        <button onClick={() => this.visualizeDijkstra()}>
-          Click to Visualize Dijkstra's Algorithm!
-        </button>
-        <button>
-            Start Node
-        </button>
-        <button>
-            End Node
-        </button>
-        <button>
-            Enter Walls
-        </button>
+        <ul>
+          <li id = 'main'><a href = "/">Pathfinding Visalizer</a></li>
+          {/* eslint-disable-next-line */}
+          <li onClick={() => this.visualizeDijkstra().then(message = FINAL_MESSAGE)}><a href = "#">Visualize!</a></li>
+          {/* eslint-disable-next-line */}
+          <li onClick={() => this.resetWalls()}><a href = "#">Reset Walls</a></li>
+          {/* eslint-disable-next-line */}
+          <li onClick={() => this.enterEndNode()}><a href = "#">End Node</a></li>
+          {/* eslint-disable-next-line */}
+          <li className = 'startNode' onClick={() => this.enterStartNode()}><a href = "#">Start Node</a></li>
+        </ul>
+        <p>{message}</p>
         <div className="grid">
           {grid.map((row, rowIdx) => {
             return (

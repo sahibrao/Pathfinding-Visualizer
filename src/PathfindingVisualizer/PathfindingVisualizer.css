@@ -1,3 +1,46 @@
 .grid {
-    margin:100px 0 0;
+    margin:45px 0 0;
 }
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #252525;
+    height: 50%;
+
+  }
+
+p {
+    margin: 35px 0 0;
+    font-family: verdana;
+    font-size: 20px;
+}
+
+  li {
+    float: right;
+  }
+  
+  li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  #main {
+    background-color: green;
+    float: left;
+    font-style: oblique;
+    font-weight: lighter;
+  }
+
+  
+  /* Change the link color to #111 (black) on hover */
+  li a:hover {
+    background-color: #111111;
+  }
