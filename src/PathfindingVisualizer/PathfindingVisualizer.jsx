@@ -161,11 +161,11 @@ export default class PathfindingVisualizer extends Component {
 
   enterStartNode(){
     message = 'Pick a Node as your Starting Node'
-    this.setState({mouseIsPressedForStartNode: true});
+    this.setState({mouseIsPressedForStartNode: true, mouseIsPressedForEndNode: false});
   }
   enterEndNode(){
     message = 'Pick a Node as your Ending Node'
-    this.setState({mouseIsPressedForEndNode: true});
+    this.setState({mouseIsPressedForEndNode: true, mouseIsPressedForStartNode: false});
   }
   resetWalls(){
     const newGrid = this.state.grid;
@@ -185,7 +185,7 @@ export default class PathfindingVisualizer extends Component {
     return (
       <>
         <ul>
-          <li id = 'main'><a href = "/">Pathfinding Visalizer</a></li>
+          <li id = 'main'><a href = "/">Pathfinding Visualizer</a></li>
           {/* eslint-disable-next-line */}
           <li onClick={() => this.visualizeDijkstra().then(message = FINAL_MESSAGE)}><a href = "#">Visualize!</a></li>
           {/* eslint-disable-next-line */}
