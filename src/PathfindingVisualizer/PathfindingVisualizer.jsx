@@ -159,6 +159,13 @@ export default class PathfindingVisualizer extends Component {
     this.animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder)
   }
 
+  visualizeDFS() {
+    console.log('visualising Dijkstra');
+    const {grid} = this.state;
+    const startNode = this.getStartNode(grid);
+    const finishNode = this.getEndNode(grid);
+  }
+
   enterStartNode(){
     message = 'Pick a Node as your Starting Node'
     this.setState({mouseIsPressedForStartNode: true, mouseIsPressedForEndNode: false});
