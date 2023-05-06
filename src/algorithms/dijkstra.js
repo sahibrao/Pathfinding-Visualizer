@@ -1,7 +1,3 @@
-// Performs Dijkstra's algorithm; returns *all* nodes in the order
-// in which they were visited. Also makes nodes point back to their
-// previous node, effectively allowing us to compute the shortest path
-// by backtracking from the finish node.
 export function dijkstra(grid, startNode, finishNode) {
     const visitedNodesInOrder = [];
     startNode.distance = 0;
@@ -33,7 +29,7 @@ export function dijkstra(grid, startNode, finishNode) {
     }
   }
   
-  function getUnvisitedNeighbors(node, grid) {
+  export function getUnvisitedNeighbors(node, grid) {
     const neighbors = [];
     const {col, row} = node;
     if (row > 0) neighbors.push(grid[row - 1][col]);
@@ -43,7 +39,7 @@ export function dijkstra(grid, startNode, finishNode) {
     return neighbors.filter(neighbor => !neighbor.isVisited);
   }
   
-  function getAllNodes(grid) {
+  export function getAllNodes(grid) {
     const nodes = [];
     for (const row of grid) {
       for (const node of row) {
